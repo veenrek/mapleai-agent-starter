@@ -26,7 +26,7 @@ Always validate before signing: `scheme === "exact"`, expected network, expected
 - `POST /v1/embeddings` — **free**, 2048-dim vectors, `input` = string or 1..128 strings.
   Optional fields: `input_type` (`query`|`passage`), `encoding_format`. `model` is ignored (single fixed model).
 - `POST /v1/chat/completions`, `POST /v1/responses` — GPT models, priced per counted tokens + overhead. Prices live in `GET /v1/models`.
-- `POST /v1/messages` — **Anthropic Messages API** (Claude): native format, `max_tokens` required, optional `system`. Models: `claude-sonnet-5`, `claude-opus-4-8`, `claude-opus-5`.
+- `POST /v1/messages` — **Anthropic Messages API** (Claude): native format, `max_tokens` required, optional `system`. Models: `claude-haiku-4-5`, `claude-sonnet-4-5/4-6/5/5-5`, `claude-opus-4-6/4-7/4-8/5/5-5` — full list and live prices in `GET /v1/models`.
 - `POST /jev` — structured decisions (`model: jev-latest`, `state`, `questions`).
 - `POST /prepaid/codes {model, tokens}` — prepaid key pack (100k..1M tokens in 0.1M steps).
 - `POST /prepaid/codes/auto` — empty body buys the cheapest current pack ("tap").
