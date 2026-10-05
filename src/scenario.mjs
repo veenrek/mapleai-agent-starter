@@ -1,8 +1,9 @@
 // Full MapleAI agent scenario:
 //   1. free embeddings probe
 //   2. x402-paid prepaid key purchase (tap)
-//   3. prepaid key status check
-//   4. chat completion through the prepaid key
+//   3. prepaid key status check (same-origin GET /prepaid/status)
+//   4. chat completion through the prepaid key (same-origin POST /prepaid/v1/chat/completions)
+//      Apex equivalents: https://mapleai.shop/v1/prepaid/status and …/v1/chat/completions.
 //
 // Usage: SVM_PRIVATE_KEY=<base58> node src/scenario.mjs --network solana
 //        EVM_PRIVATE_KEY=0x...   node src/scenario.mjs --network base
@@ -25,7 +26,8 @@ const domains = {
 const domain = domains[network];
 if (!domain) { console.error("unknown --network, use solana|base"); process.exit(1); }
 
-const prepaidApi = "https://mapleai.shop/v1";
+const prepaidStatusUrl = domain.origin + "/prepaid/status";
+const prepaidChatUrl = domain.origin + "/prepaid/v1/chat/completions";
 const spendCapAtoms = 1_000_000n; // hard cap per payment: 1.00 USDC
 
 function step(name) { console.log("\n=== " + name + " ==="); }
@@ -98,9 +100,9 @@ const key = pack.code;
 if (typeof key !== "string" || !key.startsWith("oms_buy_")) fail("tap did not return a prepaid key");
 console.log("key issued for model:", pack.model, "| budget:", pack.tokens?.total, "tokens");
 
-// 3. Verify the key at the prepaid status endpoint.
+// 3. Verify the key at the same-origin prepaid status endpoint (free).
 step("3/4 prepaid key status");
-const status = await fetch(prepaidApi + "/prepaid/status", {
+const status = await fetch(prepaidStatusUrl, {
   headers: { authorization: "Bearer " + key }, signal: AbortSignal.timeout(30_000),
 });
 if (!status.ok) fail(`status HTTP ${status.status}`);
@@ -110,9 +112,9 @@ console.log("valid:", statusData.valid, "| models:", statusData.allowedModels.jo
   "| remaining:", statusData.tokens.remaining);
 const model = statusData.allowedModels[0];
 
-// 4. Run one chat completion through the prepaid gateway.
+// 4. Run one chat completion through the same gateway — Bearer key, no x402.
 step("4/4 chat through prepaid key");
-const chat = await fetch(prepaidApi + "/chat/completions", {
+const chat = await fetch(prepaidChatUrl, {
   method: "POST",
   headers: { authorization: "Bearer " + key, "content-type": "application/json" },
   body: JSON.stringify({ model, messages: [{ role: "user", content: "Reply with exactly: OK" }], stream: false }),
@@ -125,4 +127,4 @@ console.log("assistant:", JSON.stringify(chatData.choices?.[0]?.message?.content
 console.log("usage:", JSON.stringify(chatData.usage ?? null));
 
 console.log("\nSCENARIO PASSED — keep the key for further calls:");
-console.log("  curl " + prepaidApi + "/prepaid/status -H 'Authorization: Bearer " + key + "'");
+console.log("  curl " + prepaidStatusUrl + " -H 'Authorization: Bearer " + key + "'");

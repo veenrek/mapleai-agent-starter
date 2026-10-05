@@ -8,9 +8,11 @@ that read `AGENTS.md` (OpenAI Codex, Cursor legacy, others).
 - API: MapleAI x402 paid LLM endpoints, USDC on Solana/Base/Polygon/Arc.
 - Free entry: `POST {origin}/v1/embeddings` (2048-dim, no key).
 - Paid entry: `POST {origin}/prepaid/codes/auto` — one x402 payment mints an `oms_buy_...` key
-  for the cheapest combo; use it as `Authorization: Bearer` on `https://mapleai.shop/v1`.
-- Key status (free): `GET https://mapleai.shop/v1/prepaid/status`.
-- Chat: `POST https://mapleai.shop/v1/chat/completions` with `model` = combo name from key status.
+  for the cheapest combo; use it as `Authorization: Bearer`.
+- Spend the key (no x402): `POST {origin}/prepaid/v1/chat/completions` on the same gateway
+  (any `/prepaid/v1/*` subpath forwards), or apex `POST https://mapleai.shop/v1/chat/completions`.
+- Key status (free): `GET {origin}/prepaid/status` or `GET https://mapleai.shop/v1/prepaid/status`.
+- Chat: `model` field = combo name from key status (`allowedModels`).
 - Live catalog/prices: `GET {origin}/v1/models`; worked examples: `GET {origin}/openapi.json`.
 - Payment flow details and safety caps: see `CLAUDE.md`.
 - Working paid client code: `src/scenario.mjs` (`npm run scenario -- --network base|solana`).
@@ -26,4 +28,4 @@ that read `AGENTS.md` (OpenAI Codex, Cursor legacy, others).
 ## MCP
 
 `.mcp.json` wires the `mapleai-mcp` server (tools: list_models, embed_text, prepaid_status,
-chat_completion, jev_decision, buy_prepaid_tap). Keep keys in env, never in the file.
+chat_completion, jev_decide, agent_execute, buy_prepaid_tap, prepaid_chat). Keep keys in env, never in the file.

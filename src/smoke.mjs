@@ -52,6 +52,32 @@ for (const origin of origins) {
     expect(challenge.x402Version === 2, "x402Version !== 2");
     expect(challenge.accepts?.[0]?.scheme === "exact", "scheme !== exact");
   });
+
+  await check(origin + " prepaid endpoints 401 shapes", async () => {
+    // No key: the gateway itself answers 401 prepaid_key_required (not a 402 challenge).
+    const noKey = await fetch(origin + "/prepaid/v1/chat/completions", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ model: "openai/gpt-6-luna", messages: [{ role: "user", content: "hi" }] }),
+      signal: AbortSignal.timeout(20_000),
+    });
+    expect(noKey.status === 401, "expected 401, got " + noKey.status);
+    const noKeyBody = await noKey.json();
+    expect(noKeyBody.error?.type === "prepaid_key_required", "type !== prepaid_key_required");
+
+    // Fake key: forwarded to the prepaid API, which answers 401 AUTH_002 on both endpoints.
+    const fakeAuth = { authorization: "Bearer oms_buy_smoke_invalid" };
+    const fakeChat = await fetch(origin + "/prepaid/v1/chat/completions", {
+      method: "POST", headers: { "content-type": "application/json", ...fakeAuth },
+      body: JSON.stringify({ model: "openai/gpt-6-luna", messages: [{ role: "user", content: "hi" }] }),
+      signal: AbortSignal.timeout(20_000),
+    });
+    expect(fakeChat.status === 401, "expected 401, got " + fakeChat.status);
+    const fakeChatBody = await fakeChat.json();
+    expect(fakeChatBody.error?.code === "AUTH_002", "code !== AUTH_002");
+
+    const fakeStatus = await fetch(origin + "/prepaid/status", { headers: fakeAuth, signal: AbortSignal.timeout(20_000) });
+    expect(fakeStatus.status === 401, "expected 401, got " + fakeStatus.status);
+  });
 }
 
 if (failures > 0) { console.error(`\n${failures} check(s) failed`); process.exit(1); }

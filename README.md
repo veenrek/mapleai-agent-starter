@@ -11,8 +11,10 @@ OpenAI-compatible LLM endpoints that charge per request in USDC via the [x402](h
 | GPT chat completions | `POST {sol,base,polygon,arc}.mapleai.shop/v1/chat/completions` | from $0.001 USDC/request |
 | Responses API | `POST /v1/responses` | same |
 | Image generation / edit (gpt-image-2) | `POST /api/v1/images/generations` `…/image2image` | $0.02/image |
-| Jev structured decisions | `POST /jev` | $0.12/1M input tokens |
+| Jev structured decisions | `POST /jev` | $0.06/1M input tokens |
 | Prepaid API key purchase (agent self-onboarding) | `POST /prepaid/codes/auto` | from $0.007 USDC |
+| Chat with the prepaid key (no x402) | `POST /prepaid/v1/chat/completions` | key token budget |
+| Prepaid key status | `GET /prepaid/status` | **Free** |
 
 Networks: Solana, Base, Polygon, Arc — USDC, self-custodial. Facilitators: CDP (Solana/Base/Polygon), local (Arc).
 
@@ -42,8 +44,9 @@ npm run scenario -- --network base
 ```
 
 `scenario.mjs` buys the cheapest prepaid pack (~$0.008–0.142 depending on today's cheapest model),
-verifies the key at `https://mapleai.shop/v1/prepaid/status`, then runs one chat completion
-through `https://mapleai.shop/v1` — the OpenAI-compatible prepaid gateway.
+verifies the key at `{origin}/prepaid/status`, then runs one chat completion
+through `{origin}/prepaid/v1/chat/completions` — the same gateway, with the key as `Authorization: Bearer`, no x402.
+(The apex equivalents `https://mapleai.shop/v1/chat/completions` and `…/v1/prepaid/status` work too.)
 The printed `oms_buy_...` key stays valid until its token budget is spent.
 
 ## MCP (local clients: Claude Code, Cursor, Claude Desktop)
@@ -55,7 +58,7 @@ The printed `oms_buy_...` key stays valid until its token budget is spent.
   "mcpServers": {
     "mapleai": {
       "command": "npx",
-      "args": ["-y", "-p", "mapleai-mcp@0.2.0", "mapleai-mcp"],
+      "args": ["-y", "-p", "mapleai-mcp@0.3.0", "mapleai-mcp"],
       "env": { "MCP_NETWORK": "base", "EVM_PRIVATE_KEY": "0x..." }
     }
   }
@@ -63,7 +66,7 @@ The printed `oms_buy_...` key stays valid until its token budget is spent.
 ```
 
 Tools: `list_models` (free), `embed_text` (free), `prepaid_status` (free),
-`chat_completion`, `jev_decision`, `buy_prepaid_tap`.
+`chat_completion`, `jev_decide`, `agent_execute`, `buy_prepaid_tap`, `prepaid_chat`.
 
 ## Discovery (machine-readable, agent-first)
 
