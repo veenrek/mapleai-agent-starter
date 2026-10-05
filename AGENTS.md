@@ -28,4 +28,4 @@ that read `AGENTS.md` (OpenAI Codex, Cursor legacy, others).
 ## MCP
 
 `.mcp.json` wires the `mapleai-mcp` server (tools: list_models, embed_text, prepaid_status,
-chat_completion, jev_decide, agent_execute, buy_prepaid_tap, prepaid_chat). Keep keys in env, never in the file.
+chat_completion, claude_message, jev_decide, agent_execute, buy_prepaid_tap, prepaid_chat). Keep keys in env, never in the file.

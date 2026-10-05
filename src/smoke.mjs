@@ -53,6 +53,18 @@ for (const origin of origins) {
     expect(challenge.accepts?.[0]?.scheme === "exact", "scheme !== exact");
   });
 
+  await check(origin + " anthropic /v1/messages 402 challenge", async () => {
+    const res = await fetch(origin + "/v1/messages", {
+      method: "POST",
+      headers: { "content-type": "application/json", "anthropic-version": "2023-06-01" },
+      body: JSON.stringify({ model: "claude-opus-4-8", max_tokens: 8, messages: [{ role: "user", content: "hi" }] }),
+      signal: AbortSignal.timeout(20_000),
+    });
+    expect(res.status === 402, "expected 402, got " + res.status);
+    const challenge = JSON.parse(Buffer.from(res.headers.get("payment-required"), "base64").toString("utf8"));
+    expect(challenge.x402Version === 2, "x402Version !== 2");
+  });
+
   await check(origin + " prepaid endpoints 401 shapes", async () => {
     // No key: the gateway itself answers 401 prepaid_key_required (not a 402 challenge).
     const noKey = await fetch(origin + "/prepaid/v1/chat/completions", {

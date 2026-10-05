@@ -10,6 +10,7 @@ OpenAI-compatible LLM endpoints that charge per request in USDC via the [x402](h
 | Embeddings (2048-dim, NVIDIA nemotron-3-embed-1b) | `POST /v1/embeddings` | **Free** |
 | GPT chat completions | `POST {sol,base,polygon,arc}.mapleai.shop/v1/chat/completions` | from $0.001 USDC/request |
 | Responses API | `POST /v1/responses` | same |
+| Anthropic Messages API (Claude) | `POST /v1/messages` | per token (claude-sonnet-5/opus) |
 | Image generation / edit (gpt-image-2) | `POST /api/v1/images/generations` `…/image2image` | $0.02/image |
 | Jev structured decisions | `POST /jev` | $0.06/1M input tokens |
 | Prepaid API key purchase (agent self-onboarding) | `POST /prepaid/codes/auto` | from $0.007 USDC |
@@ -58,7 +59,7 @@ The printed `oms_buy_...` key stays valid until its token budget is spent.
   "mcpServers": {
     "mapleai": {
       "command": "npx",
-      "args": ["-y", "-p", "mapleai-mcp@0.3.0", "mapleai-mcp"],
+      "args": ["-y", "-p", "mapleai-mcp@0.3.2", "mapleai-mcp"],
       "env": { "MCP_NETWORK": "base", "EVM_PRIVATE_KEY": "0x..." }
     }
   }
@@ -66,7 +67,7 @@ The printed `oms_buy_...` key stays valid until its token budget is spent.
 ```
 
 Tools: `list_models` (free), `embed_text` (free), `prepaid_status` (free),
-`chat_completion`, `jev_decide`, `agent_execute`, `buy_prepaid_tap`, `prepaid_chat`.
+`chat_completion`, `claude_message`, `jev_decide`, `agent_execute`, `buy_prepaid_tap`, `prepaid_chat`.
 
 ## Discovery (machine-readable, agent-first)
 
