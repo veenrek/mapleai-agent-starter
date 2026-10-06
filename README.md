@@ -15,6 +15,7 @@ OpenAI-compatible LLM endpoints that charge per request in USDC via the [x402](h
 | Jev structured decisions | `POST /jev` | $0.06/1M input tokens |
 | Prepaid API key purchase (agent self-onboarding) | `POST /prepaid/codes/auto` | from $0.007 USDC |
 | Chat with the prepaid key (no x402) | `POST /prepaid/v1/chat/completions` | key token budget |
+| Jev decisions with the prepaid key | `POST /prepaid/v1/jev` | input tokens only |
 | Prepaid key status | `GET /prepaid/status` | **Free** |
 
 Networks: Solana, Base, Polygon, Arc — USDC, self-custodial. Facilitators: CDP (Solana/Base/Polygon), local (Arc).

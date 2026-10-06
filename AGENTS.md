@@ -11,6 +11,7 @@ that read `AGENTS.md` (OpenAI Codex, Cursor legacy, others).
   for the cheapest combo; use it as `Authorization: Bearer`.
 - Spend the key (no x402): `POST {origin}/prepaid/v1/chat/completions` on the same gateway
   (any `/prepaid/v1/*` subpath forwards), or apex `POST https://mapleai.shop/v1/chat/completions`.
+- Jev decisions by key: `POST {origin}/prepaid/v1/jev` — debits input tokens only.
 - Key status (free): `GET {origin}/prepaid/status` or `GET https://mapleai.shop/v1/prepaid/status`.
 - Chat: `model` field = combo name from key status (`allowedModels`).
 - Live catalog/prices: `GET {origin}/v1/models`; worked examples: `GET {origin}/openapi.json`.

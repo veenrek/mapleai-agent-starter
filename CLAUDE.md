@@ -31,6 +31,7 @@ Always validate before signing: `scheme === "exact"`, expected network, expected
 - `POST /prepaid/codes {model, tokens}` — prepaid key pack (100k..1M tokens in 0.1M steps).
 - `POST /prepaid/codes/auto` — empty body buys the cheapest current pack ("tap").
 - `POST /prepaid/v1/chat/completions` — **same-gateway spend**: prepaid `oms_buy_...` Bearer key, no x402. Any `/prepaid/v1/*` subpath forwards to the prepaid API. Equivalents on the apex: `POST https://mapleai.shop/v1/chat/completions`.
+- `POST /prepaid/v1/jev` — **prepaid Jev** structured decisions with the same Bearer key; debits input tokens only, output free.
 - `GET /prepaid/status` — **same-gateway**, free key status (`valid`, `remaining`); apex equivalent: `GET https://mapleai.shop/v1/prepaid/status`.
 
 ## Discovery before hardcoding anything
